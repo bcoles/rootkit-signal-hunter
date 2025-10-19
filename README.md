@@ -4,6 +4,10 @@ Some rootkits install signal handlers which listen for specific signals to eleva
 This tool can identify these rootkits by sending signals and observing UID switching to root.
 Optionally spawns a root shell.
 
+<p align="center">
+  <img src="assets/output.gif" alt="Rootkit Signal Hunter" />
+</p>
+
 Tested with:
 
 * [Singularity](https://github.com/MatheuZSecurity/Singularity) 5b6c4b6 (2025-10-19) on Ubuntu 24.04 kernel 6.8.0-31-generic (x64)
