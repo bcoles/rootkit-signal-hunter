@@ -1,0 +1,14 @@
+[package]
+name = "rootkit-signal-hunter"
+description = "Detect rootkits which use signals to elevate process privileges."
+keywords = ["rootkit", "security", "privilege-escalation"]
+categories = ["security", "system-utilities"]
+version = "0.1.0"
+edition = "2024"
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/bcoles/rootkit-signal-hunter"
+repository = "https://github.com/bcoles/rootkit-signal-hunter"
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
