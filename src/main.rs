@@ -72,6 +72,7 @@ fn main() {
     );
 
     let signals_shared: Arc<Mutex<Vec<i32>>> = Arc::new(Mutex::new(Vec::new()));
+    let processes_shared: Arc<Mutex<Vec<u32>>> = Arc::new(Mutex::new(Vec::new()));
 
     let (tx, rx) = mpsc::channel::<i32>();
     let rx = Arc::new(Mutex::new(rx));
@@ -80,6 +81,7 @@ fn main() {
     for _ in 0..args.threads {
         let rx_cloned = Arc::clone(&rx);
         let signals_cloned = Arc::clone(&signals_shared);
+        let processes_cloned = Arc::clone(&processes_shared);
         let verbose = args.verbose;
         let pid = args.pid.clone();
 
@@ -104,7 +106,12 @@ fn main() {
                     .stderr(Stdio::piped())
                     .spawn()
                 {
-                    Ok(c) => c,
+                    Ok(c) => {
+                        let pid = c.id();
+                        let mut processes = processes_cloned.lock().unwrap();
+                        processes.push(pid);
+                        c
+                    }
                     Err(e) => {
                         eprintln!("Failed to spawn command for signal {}: {}", signal, e);
                         continue;
@@ -192,6 +199,16 @@ fn main() {
 
     for h in handles {
         let _ = h.join();
+    }
+
+    if let Ok(processes) = Arc::try_unwrap(processes_shared) {
+        println!("Cleaning up processes ...");
+
+        if let Ok(processes) = processes.into_inner() {
+            for pid in processes {
+                let _output = Command::new("kill").arg(pid.to_string()).output();
+            }
+        }
     }
 
     let signals = Arc::try_unwrap(signals_shared)
