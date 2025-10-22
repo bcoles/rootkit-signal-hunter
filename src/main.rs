@@ -48,6 +48,20 @@ fn main() {
         }
     }
 
+    match Command::new("sh")
+        .arg("-c")
+        .arg("command -v kill >/dev/null 2>&1")
+        .status()
+    {
+        Ok(s) if s.success() => {}
+        _ => {
+            eprintln!(
+                "Required 'kill' command not found in PATH.\nPlease ensure 'kill' is installed and available in your PATH."
+            );
+            std::process::exit(1);
+        }
+    }
+
     let args = Cli::parse();
 
     if args.verbose {
