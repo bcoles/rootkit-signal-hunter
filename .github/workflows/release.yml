@@ -28,8 +28,14 @@ jobs:
       - name: Install target and build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y musl-tools ca-certificates
+          sudo apt-get install -y musl-tools ca-certificates gcc-aarch64-linux-gnu
           rustup target add ${{ matrix.target }}
+
+          if [ "${{ matrix.target }}" = "aarch64-unknown-linux-musl" ]; then
+            mkdir -p ~/.cargo
+            echo '[target.aarch64-unknown-linux-musl]' >> ~/.cargo/config.toml
+            echo 'linker = "aarch64-linux-gnu-gcc"' >> ~/.cargo/config.toml
+          fi
 
       - name: Cache cargo registry and build
         uses: actions/cache@v4
@@ -50,11 +56,14 @@ jobs:
         id: artifact
         run: |
           BIN_NAME=rootkit-signal-hunter
+          VERSION=${{ github.ref_name }}
           TARGET=${{ matrix.target }}
-          OUT=target/${TARGET}/release/${BIN_NAME}
+          RELEASE_NAME="${BIN_NAME}-${VERSION}-${TARGET}"
+          OUT="target/${TARGET}/release/${BIN_NAME}"
           if [ -f "${OUT}" ]; then
+            cp "${OUT}" "${RELEASE_NAME}"
             echo "found=true" >> $GITHUB_OUTPUT
-            echo "path=${OUT}" >> $GITHUB_OUTPUT
+            echo "path=${RELEASE_NAME}" >> $GITHUB_OUTPUT
           else
             echo "found=false" >> $GITHUB_OUTPUT
           fi
