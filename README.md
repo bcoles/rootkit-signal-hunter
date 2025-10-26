@@ -12,6 +12,7 @@ Tested with:
 
 * [Singularity](https://github.com/MatheuZSecurity/Singularity) 5b6c4b6 (2025-10-19) on Ubuntu 24.04 kernel 6.8.0-31-generic (x64)
 * [Diamorphine](https://github.com/m0nad/Diamorphine) 2337293 (2023-09-20) on Ubuntu 22.04 kernel 5.19.0-38-generic (x64)
+* [Codeine](https://github.com/diego-tella/Codeine) 9644336 (2025-09-02) on Ubuntu 22.04 kernel 5.19.0-38-generic (x64)
 * [KoviD](https://github.com/carloslack/KoviD) 9b67e46 (2025-10-14) on Ubuntu 24.04 kernel 6.8.0-31-generic (x64)
   * (successful detection requires knowledge of hardcoded target PID `666`)
 
@@ -36,6 +37,10 @@ rootkit-signal-hunter -- [OPTIONS]
 - `-p`, `--pid`: Process ID to send signals to (default: `$$`)
 - `-v`, `--verbose`: Enable verbose output
 
+> [!NOTE]
+> The `--pid` implementation uses `$$` to represent the process ID of a newly
+> spawned process. This will fail on non-POSIX compliant shells such as Fish.
+
 ## Example
 
 Rootkits such as [Singularity](https://github.com/MatheuZSecurity/Singularity)
@@ -54,12 +59,19 @@ process ID to be provided with the `-p` / `--pid` flag:
 rootkit-signal-hunter -s --pid 666
 ```
 
-Note: this risks terminating the legitimate process with ID `666`
-(if the current user has the necessary permission).
+> [!NOTE]
+> This risks terminating the legitimate process with ID `666`
+> (if the current user has the necessary permission).
 
-## Credit
+## License
 
-Author: bcoles
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-Shoutout to David Reguera Garcia (Dreg) who had the same idea and implemented
-similar functionality as part of [lsrootkit](https://github.com/therealdreg).
+## Acknowledgements
+
+Shoutout to David Reguera Garcia ([Dreg](https://github.com/therealdreg)) who implemented similar
+signal-based detection as part of [lsrootkit](https://github.com/therealdreg/lsrootkit).
+
+## Copyright
+
+Copyright © 2025, bcoles
