@@ -1,4 +1,17 @@
-# Rootkit Signal Hunter
+<p align="center">
+  <img src="assets/logo.png" alt="Rootkit Signal Hunter" width="300" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/bcoles/rootkit-signal-hunter/actions/workflows/tests.yml/badge.svg" alt="Build Status"/>
+  <img src="https://img.shields.io/github/v/release/bcoles/rootkit-signal-hunter" alt="Release"/>
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"/>
+</p>
+
+<h1 align="center">Rootkit Signal Hunter</h1>
+<p align="center"><i>Detect Linux rootkits which use signals to elevate process privileges.</i></p>
+
+---
 
 Some rootkits install signal handlers which listen for specific signals to elevate privileges.
 This tool can identify these rootkits by sending signals and observing UID switching to root.
@@ -16,9 +29,15 @@ Tested with:
 * [KoviD](https://github.com/carloslack/KoviD) 9b67e46 (2025-10-14) on Ubuntu 24.04 kernel 6.8.0-31-generic (x64)
   * (successful detection requires knowledge of hardcoded target PID `666`)
 
-## Build
+
+## Installation
+
+You can download the latest pre-built binaries from the [Releases page](https://github.com/bcoles/rootkit-signal-hunter/releases);
+or build the latest pre-release version from source:
 
 ```sh
+git clone https://github.com/bcoles/rootkit-signal-hunter && \
+cd rootkit-signal-hunter && \
 cargo build --release
 ```
 
