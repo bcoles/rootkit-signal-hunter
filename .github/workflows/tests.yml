@@ -1,7 +1,8 @@
-name: Pull request checks
+name: Tests
 
 on:
-  pull_request:
+  push:
+    branches: ["main", "master"]
 
 jobs:
   fmt-clippy-test:
