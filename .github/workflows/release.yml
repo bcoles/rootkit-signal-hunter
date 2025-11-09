@@ -12,7 +12,11 @@ jobs:
       packages: write
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-musl, aarch64-unknown-linux-musl]
+        target:
+          - x86_64-unknown-linux-musl
+          - i686-unknown-linux-musl
+          - aarch64-unknown-linux-musl
+          - armv7-unknown-linux-musleabihf
 
     steps:
       - name: Checkout
@@ -28,14 +32,30 @@ jobs:
       - name: Install target and build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y musl-tools ca-certificates gcc-aarch64-linux-gnu
+          sudo apt-get install -y \
+            musl-tools \
+            gcc-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabihf \
+            gcc-i686-linux-gnu
+
           rustup target add ${{ matrix.target }}
 
-          if [ "${{ matrix.target }}" = "aarch64-unknown-linux-musl" ]; then
-            mkdir -p ~/.cargo
-            echo '[target.aarch64-unknown-linux-musl]' >> ~/.cargo/config.toml
-            echo 'linker = "aarch64-linux-gnu-gcc"' >> ~/.cargo/config.toml
-          fi
+          mkdir -p ~/.cargo
+
+          case "${{ matrix.target }}" in
+            i686-unknown-linux-musl)
+              echo '[target.i686-unknown-linux-musl]' >> ~/.cargo/config.toml
+              echo 'linker = "i686-linux-gnu-gcc"' >> ~/.cargo/config.toml
+              ;;
+            aarch64-unknown-linux-musl)
+              echo '[target.aarch64-unknown-linux-musl]' >> ~/.cargo/config.toml
+              echo 'linker = "aarch64-linux-gnu-gcc"' >> ~/.cargo/config.toml
+              ;;
+            armv7-unknown-linux-musleabihf)
+              echo '[target.armv7-unknown-linux-musleabihf]' >> ~/.cargo/config.toml
+              echo 'linker = "arm-linux-gnueabihf-gcc"' >> ~/.cargo/config.toml
+              ;;
+          esac
 
       - name: Cache cargo registry and build
         uses: actions/cache@v4
@@ -48,7 +68,7 @@ jobs:
 
       - name: Build (release)
         env:
-          RUSTFLAGS: "-C target-feature=+crt-static"
+          RUSTFLAGS: "-C target-feature=+crt-static -C link-arg=-s"
         run: |
           cargo build --release --target ${{ matrix.target }}
 
